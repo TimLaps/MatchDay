@@ -1,0 +1,2082 @@
+<!-- Created by T.I.M. Labs -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Day Hub V3</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Created by T.I.M. Labs */
+        :root {
+            --hfv-blue: #2B5282;
+            --hfv-dark-blue: #1E3A5F;
+            --bg-white: #FFFFFF;
+            --text-black: #1A202C;
+            --card-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+            --danger-red: #E53E3E;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-white);
+            color: var(--text-black);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* HEADER / BANNER */
+        header {
+            background-color: var(--bg-white);
+            border-bottom: 3px solid var(--hfv-blue);
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 80px;
+            box-shadow: 0 2px 10px rgba(43, 82, 130, 0.1);
+            z-index: 10;
+            transition: background-color 0.3s ease;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            height: 55px;
+            object-fit: contain;
+        }
+
+        .header-title {
+            color: var(--hfv-blue);
+            font-size: 22px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .header-subtitle {
+            color: var(--text-black);
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .settings-btn {
+            background-color: var(--bg-white);
+            border: 2px solid var(--hfv-blue);
+            color: var(--hfv-blue);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .settings-btn:hover {
+            background-color: var(--hfv-blue);
+            color: var(--bg-white);
+            transform: scale(1.05);
+        }
+
+        #openSettings:hover {
+            transform: rotate(45deg);
+        }
+
+        .settings-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* SLIDE CONTAINER */
+        .slide-container {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: calc(100vh - 150px);
+            background-color: var(--bg-white);
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* OVERLAY BILDER & INTERAKTION */
+        .overlay-wrapper {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            cursor: move;
+            user-select: none;
+            display: inline-block;
+            outline: 2px solid transparent;
+        }
+
+        .overlay-wrapper.layer-bg {
+            z-index: 1;
+        }
+
+        .overlay-wrapper.layer-fg {
+            z-index: 20;
+        }
+
+        .overlay-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            pointer-events: none;
+        }
+
+        .overlay-wrapper.active {
+            outline: 2px dashed var(--hfv-blue);
+        }
+
+        .resize-handle {
+            position: absolute;
+            right: -8px;
+            bottom: -8px;
+            width: 16px;
+            height: 16px;
+            background-color: var(--hfv-blue);
+            border: 2px solid white;
+            border-radius: 50%;
+            cursor: se-resize;
+            z-index: 30;
+            display: none;
+        }
+
+        .overlay-wrapper.active .resize-handle {
+            display: block;
+        }
+
+        .layer-toggle-btn {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background: var(--hfv-blue);
+            color: white;
+            border: 1px solid white;
+            border-radius: 4px;
+            font-size: 10px;
+            padding: 2px 5px;
+            cursor: pointer;
+            z-index: 30;
+            font-weight: bold;
+            display: none;
+        }
+
+        .overlay-wrapper.active .layer-toggle-btn {
+            display: block;
+        }
+
+        /* LAYOUT SEITE 4 */
+        .slide4-layout {
+            display: flex;
+            width: 98%;
+            max-width: 1600px;
+            height: 100%;
+            max-height: 75vh;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        /* FOLIE 1: WILLKOMMEN */
+        .welcome-card {
+            background-color: var(--card-bg);
+            border: 2px solid var(--hfv-blue);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            max-width: 700px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(43, 82, 130, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .welcome-logo {
+            max-height: 180px;
+            margin-bottom: 25px;
+            object-fit: contain;
+        }
+
+        .welcome-title {
+            color: var(--hfv-blue);
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .welcome-text {
+            color: var(--text-black);
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            background-color: var(--bg-white);
+            color: var(--hfv-blue);
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 15px;
+            border: 2px solid var(--hfv-blue);
+        }
+
+        /* FOLIE 2: PAARUNG / KACHELN */
+        .vs-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 900px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            border: 2px solid var(--hfv-blue);
+            border-radius: 16px;
+            padding: 30px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(43, 82, 130, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .team-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            margin-bottom: 20px;
+        }
+
+        .team-name {
+            color: var(--hfv-blue);
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .vs-circle {
+            background-color: var(--hfv-blue);
+            color: var(--bg-white);
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            font-weight: 800;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            flex-shrink: 0;
+        }
+
+        .match-details {
+            margin-top: 30px;
+            background-color: var(--bg-white);
+            border: 2px solid var(--hfv-blue);
+            padding: 12px 30px;
+            border-radius: 30px;
+            color: var(--hfv-blue);
+            font-weight: 700;
+            font-size: 16px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* SPIELFELD */
+        .pitch-wrapper {
+            position: relative;
+            flex: 1;
+            height: 100%;
+            background-color: #2e7d32;
+            border: 4px solid var(--hfv-blue);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            user-select: none;
+        }
+
+        .pitch-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            pointer-events: none;
+        }
+
+        .pitch-line-center {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.85);
+        }
+
+        .pitch-circle-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-radius: 50%;
+        }
+
+        .pitch-box-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 18%;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-bottom: none;
+        }
+
+        .pitch-box-top {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50%;
+            height: 18%;
+            border: 2px solid rgba(255, 255, 255, 0.85);
+            border-top: none;
+        }
+
+        /* SPIELER POSITIONEN */
+        .player-node {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .double-player-node {
+            display: flex;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 6px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(2px);
+        }
+
+        .single-player-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90px;
+        }
+
+        .draggable-node {
+            cursor: grab;
+            transition: none;
+        }
+
+        .draggable-node:active {
+            cursor: grabbing;
+            z-index: 10;
+        }
+
+        .ball-marker {
+            width: 46px;
+            height: 46px;
+            background-color: #FFFFFF;
+            border: 2px solid var(--hfv-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            line-height: 1;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .player-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 3px solid var(--hfv-blue);
+            background-color: var(--bg-white);
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+
+        .player-label {
+            background-color: var(--hfv-blue);
+            color: var(--bg-white);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 10px;
+            margin-top: 4px;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+
+        .player-select {
+            background-color: var(--hfv-blue);
+            color: var(--bg-white);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 4px;
+            border-radius: 8px;
+            margin-top: 4px;
+            border: 1px solid var(--bg-white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            cursor: pointer;
+            outline: none;
+            text-transform: uppercase;
+            width: 100%;
+            text-align: center;
+        }
+
+        .player-select option {
+            background-color: var(--bg-white);
+            color: var(--text-black);
+            font-weight: 600;
+        }
+
+        /* FOOTER & NAVIGATION */
+        footer {
+            background-color: var(--bg-white);
+            border-top: 2px solid var(--border-color);
+            padding: 10px 30px;
+            height: 70px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .nav-btn {
+            background-color: var(--bg-white);
+            color: var(--hfv-blue);
+            border: 2px solid var(--hfv-blue);
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background-color: var(--hfv-blue);
+            color: var(--bg-white);
+        }
+
+        .nav-btn:disabled {
+            border-color: var(--border-color);
+            color: #A0AEC0;
+            cursor: not-allowed;
+        }
+
+        .slide-dots {
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #CBD5E0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background-color: var(--hfv-blue);
+            transform: scale(1.2);
+        }
+
+        /* EINSTELLUNGEN MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background-color: var(--bg-white);
+            border: 2px solid var(--hfv-blue);
+            border-radius: 16px;
+            width: 90%;
+            max-width: 750px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--hfv-blue);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            color: var(--hfv-blue);
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-black);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .form-section {
+            margin-bottom: 15px;
+            background-color: #F8FAFC;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        .form-section-title {
+            color: var(--hfv-blue);
+            font-size: 16px;
+            font-weight: 800;
+            border-left: 4px solid var(--hfv-blue);
+            padding-left: 8px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            transition: color 0.2s;
+        }
+
+        .form-section-title:hover {
+            color: var(--hfv-dark-blue);
+        }
+
+        .form-section-title::after {
+            content: '▼';
+            font-size: 12px;
+            transition: transform 0.3s ease;
+        }
+
+        .form-section.open .form-section-title::after {
+            transform: rotate(180deg);
+        }
+
+        .form-section-content {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .form-section.open .form-section-content {
+            display: block;
+        }
+
+        .setting-block {
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .setting-block:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group {
+            margin-bottom: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .form-group-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-black);
+        }
+
+        .form-group input, .form-group select {
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            width: 100%;
+        }
+
+        .form-group input[type="color"] {
+            padding: 2px;
+            height: 38px;
+            cursor: pointer;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--hfv-blue);
+        }
+
+        .player-input-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 1fr 40px;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 10px;
+            background-color: #FFFFFF;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .delete-player-btn {
+            background-color: transparent;
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+            border-radius: 6px;
+            padding: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .delete-player-btn:hover {
+            background-color: var(--danger-red);
+            color: white;
+        }
+
+        .add-player-btn {
+            background-color: transparent;
+            color: var(--hfv-blue);
+            border: 2px dashed var(--hfv-blue);
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .add-player-btn:hover {
+            background-color: rgba(43, 82, 130, 0.05);
+        }
+
+        .save-btn {
+            background-color: var(--hfv-blue);
+            color: var(--bg-white);
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background-color 0.2s;
+        }
+
+        .save-btn:hover {
+            background-color: var(--hfv-dark-blue);
+        }
+
+        .reset-btn {
+            background-color: transparent;
+            color: var(--danger-red);
+            border: 1px solid var(--danger-red);
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.2s;
+        }
+
+        .reset-btn:hover {
+            background-color: var(--danger-red);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER / BANNER -->
+    <header id="mainHeader">
+        <div class="header-brand">
+            <img src="Wappen.jpg" id="headerLogo" alt="Heim Logo" class="header-logo" onerror="this.src='https://via.placeholder.com/60/2B5282/FFFFFF?text=LOGO'">
+            <div>
+                <div class="header-title" id="headerClubName">Hiddinghauser F.V. 1966 e.V.</div>
+                <div class="header-subtitle" id="headerMatchInfo">Heimspiel - Spieltags-Präsentation</div>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button class="settings-btn" id="fullscreenToggle" title="Vollbild umschalten">
+                <svg id="fullscreenIcon" viewBox="0 0 24 24">
+                    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+            </button>
+            <button class="settings-btn" id="openSettings" title="Einstellungen">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.44-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- SLIDES -->
+    <div class="slide-container">
+        
+        <!-- FOLIE 1: WILLKOMMEN -->
+        <div class="slide active" id="slide1">
+            <div id="slide1Overlays" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;"></div>
+            <div class="welcome-card" id="cardWelcome">
+                <img src="Wappen.jpg" id="welcomeLogo" alt="Vereinswappen" class="welcome-logo" onerror="this.src='https://via.placeholder.com/150/2B5282/FFFFFF?text=HEIM+LOGO'">
+                <h1 class="welcome-title" id="welcomeClub">Hiddinghauser F.V. 1966 e.V.</h1>
+                <p class="welcome-text" id="welcomeText">Herzlich willkommen zum heutigen Heimspiel!</p>
+                <div class="welcome-badge" id="welcomeMatchDate">Kreisliga • Spieltag</div>
+            </div>
+        </div>
+
+        <!-- FOLIE 2: PAARUNG -->
+        <div class="slide" id="slide2">
+            <div id="slide2Overlays" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0;"></div>
+            <div class="vs-container">
+                <div class="team-card" id="cardHome">
+                    <img src="Wappen.jpg" id="homeLogo" class="team-logo" alt="Heim Logo" onerror="this.src='https://via.placeholder.com/120/2B5282/FFFFFF?text=HEIM'">
+                    <div class="team-name" id="homeName">Hiddinghauser F.V.</div>
+                </div>
+                <div class="vs-circle">VS</div>
+                <div class="team-card" id="cardAway">
+                    <img src="https://via.placeholder.com/120/E2E8F0/1A202C?text=GEGNER" id="awayLogo" class="team-logo" alt="Gast Logo">
+                    <div class="team-name" id="awayName">Gastverein</div>
+                </div>
+            </div>
+            <div class="match-details" id="matchLocation">Sportplatz Hiddinghausen • 15:00 Uhr</div>
+        </div>
+
+        <!-- FOLIE 3: TAKTIK -->
+        <div class="slide" id="slide3">
+            <div class="pitch-wrapper" id="pitchTaktik" style="width: 95%; max-width: 1400px;">
+                <div class="pitch-lines"></div>
+                <div class="pitch-line-center"></div>
+                <div class="pitch-circle-center"></div>
+                <div class="pitch-box-bottom"></div>
+                <div class="pitch-box-top"></div>
+            </div>
+        </div>
+
+        <!-- FOLIE 4: AUFSTELLUNG -->
+        <div class="slide" id="slide4">
+            <div class="slide4-layout">
+                <div class="pitch-wrapper" id="pitchAufstellung">
+                    <div class="pitch-lines"></div>
+                    <div class="pitch-line-center"></div>
+                    <div class="pitch-circle-center"></div>
+                    <div class="pitch-box-bottom"></div>
+                    <div class="pitch-box-top"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FOOTER NAVIGATION -->
+    <footer>
+        <button class="nav-btn" id="prevBtn" disabled>← Zurück</button>
+        <div class="slide-dots">
+            <div class="dot active" data-slide="0"></div>
+            <div class="dot" data-slide="1"></div>
+            <div class="dot" data-slide="2"></div>
+            <div class="dot" data-slide="3"></div>
+        </div>
+        
+        <!-- SVG BRANDING -->
+        <div style="display: inline-flex; align-items: center; gap: 8px; font-family: sans-serif;">
+            <span style="font-size: 14px; opacity: 0.8;">Created by</span>
+            <div style="display: flex; align-items: center; gap: 6px; background: #0f172a; padding: 4px 10px; border-radius: 6px; border: 1px solid #1e293b;">
+                <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 25 H85 V38 H58 V85 H42 V38 H15 Z" fill="url(#grad_t)" />
+                    <path d="M42 45 L60 85 L78 45 L90 45 L90 85 H78 L78 60 L64 85 H56 L42 60 Z" fill="#00d2ff" />
+                    <path d="M60 20 L85 10 L70 35 Z" fill="#00f2fe" />
+                    <defs>
+                        <linearGradient id="grad_t" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#38bdf8" />
+                            <stop offset="100%" stop-color="#1e40af" />
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <span style="color: #ffffff; font-weight: bold; font-size: 14px; letter-spacing: 1px;">T.I.M. <span style="color: #38bdf8;">LABS</span></span>
+            </div>
+        </div>
+
+        <button class="nav-btn" id="nextBtn">Weiter →</button>
+    </footer>
+
+    <!-- EINSTELLUNGEN MODAL -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">⚙️ Spiel- & Design-Einstellungen</div>
+                <button class="close-btn" id="closeSettings">&times;</button>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">Inhalte & Typografie</div>
+                <div class="form-section-content">
+                    <div class="setting-block">
+                        <div class="form-group">
+                            <label>Vereinsname (Heim)</label>
+                            <input type="text" id="inputHomeName" value="Hiddinghauser F.V. 1966 e.V.">
+                        </div>
+                        <div class="form-group" style="margin-top: 6px;">
+                            <label>Logo (Heim) hochladen</label>
+                            <input type="file" id="inputHomeLogoFile" accept="image/*">
+                        </div>
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>Größe (px)</label>
+                                <input type="number" id="inputHeaderFontSize" value="22" min="12" max="48">
+                            </div>
+                            <div class="form-group">
+                                <label>Dicke</label>
+                                <select id="inputHeaderFontWeight">
+                                    <option value="400">Normal (400)</option>
+                                    <option value="600">Halbfett (600)</option>
+                                    <option value="700">Fett (700)</option>
+                                    <option value="800" selected>Sehr Fett (800)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farbe</label>
+                                <input type="color" id="inputHeaderFontColor" value="#2B5282">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-block">
+                        <div class="form-group">
+                            <label>Spielort & Uhrzeit</label>
+                            <input type="text" id="inputMatchInfo" value="Sportplatz Hiddinghausen • 15:00 Uhr">
+                        </div>
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>Größe (px)</label>
+                                <input type="number" id="inputHeaderSubtitleFontSize" value="14" min="10" max="32">
+                            </div>
+                            <div class="form-group">
+                                <label>Dicke</label>
+                                <select id="inputHeaderSubtitleFontWeight">
+                                    <option value="400">Normal (400)</option>
+                                    <option value="600" selected>Halbfett (600)</option>
+                                    <option value="700">Fett (700)</option>
+                                    <option value="800">Sehr Fett (800)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farbe</label>
+                                <input type="color" id="inputHeaderSubtitleFontColor" value="#1A202C">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-block">
+                        <div class="form-group">
+                            <label>Gastmannschaft Name</label>
+                            <input type="text" id="inputAwayName" value="Gastverein">
+                        </div>
+                        <div class="form-group" style="margin-top: 6px;">
+                            <label>Gegner-Logo (Gast) hochladen</label>
+                            <input type="file" id="inputAwayLogoFile" accept="image/*">
+                        </div>
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>Größe (px)</label>
+                                <input type="number" id="inputCardFontSize" value="24" min="12" max="48">
+                            </div>
+                            <div class="form-group">
+                                <label>Dicke</label>
+                                <select id="inputCardFontWeight">
+                                    <option value="400">Normal (400)</option>
+                                    <option value="600">Halbfett (600)</option>
+                                    <option value="700">Fett (700)</option>
+                                    <option value="800" selected>Sehr Fett (800)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farbe</label>
+                                <input type="color" id="inputCardFontColor" value="#2B5282">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-block">
+                        <div class="form-group">
+                            <label>Willkommenstext (Folie 1 Fließtext)</label>
+                            <input type="text" id="inputWelcomeText" value="Herzlich willkommen zum heutigen Heimspiel!">
+                        </div>
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>Größe (px)</label>
+                                <input type="number" id="inputWelcomeTextFontSize" value="18" min="12" max="36">
+                            </div>
+                            <div class="form-group">
+                                <label>Dicke</label>
+                                <select id="inputWelcomeTextFontWeight">
+                                    <option value="400">Normal (400)</option>
+                                    <option value="600" selected>Halbfett (600)</option>
+                                    <option value="700">Fett (700)</option>
+                                    <option value="800">Sehr Fett (800)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farbe</label>
+                                <input type="color" id="inputWelcomeTextFontColor" value="#1A202C">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-block">
+                        <div class="form-group">
+                            <label>Spieltag / Liga Info (Seite 1 Badge)</label>
+                            <input type="text" id="inputWelcomeBadge" value="Kreisliga • Spieltag">
+                        </div>
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>Größe (px)</label>
+                                <input type="number" id="inputBadgeFontSize" value="15" min="10" max="30">
+                            </div>
+                            <div class="form-group">
+                                <label>Dicke</label>
+                                <select id="inputBadgeFontWeight">
+                                    <option value="400">Normal (400)</option>
+                                    <option value="600">Halbfett (600)</option>
+                                    <option value="700" selected>Fett (700)</option>
+                                    <option value="800">Sehr Fett (800)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farbe</label>
+                                <input type="color" id="inputBadgeFontColor" value="#2B5282">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-block">
+                        <label style="font-size: 13px; font-weight: bold; color: var(--hfv-blue); display: block; margin-bottom: 6px;">Spielfeld-Beschriftung (Taktik & Aufstellung)</label>
+                        <div class="form-group-row">
+                            <div class="form-group">
+                                <label>Größe (px)</label>
+                                <input type="number" id="inputPitchFontSize" value="12" min="8" max="24">
+                            </div>
+                            <div class="form-group">
+                                <label>Dicke</label>
+                                <select id="inputPitchFontWeight">
+                                    <option value="400">Normal (400)</option>
+                                    <option value="600">Halbfett (600)</option>
+                                    <option value="700" selected>Fett (700)</option>
+                                    <option value="800">Sehr Fett (800)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farbe</label>
+                                <input type="color" id="inputPitchFontColor" value="#FFFFFF">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-block">
+                        <div class="form-group">
+                            <label>Banner-Hintergrundfarbe</label>
+                            <input type="color" id="inputHeaderBg" value="#FFFFFF">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SEITE 1 BILDER OVERLAYS -->
+            <div class="form-section">
+                <div class="form-section-title">Seite 1 - Zusatz-Bilder Upload & Ebenen</div>
+                <div class="form-section-content">
+                    <div id="slide1ImagesContainer"></div>
+                </div>
+            </div>
+
+            <!-- SEITE 2 BILDER OVERLAYS -->
+            <div class="form-section">
+                <div class="form-section-title">Seite 2 - Zusatz-Bilder Upload & Ebenen</div>
+                <div class="form-section-content">
+                    <div id="slide2ImagesContainer"></div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">Taktische Formation</div>
+                <div class="form-section-content">
+                    <div class="form-group">
+                        <label>Formation auswählen (8 Systeme verfügbar)</label>
+                        <select id="inputFormation">
+                            <option value="4-3-3">4-3-3 (Klassisch)</option>
+                            <option value="4-4-2">4-4-2 (Flach / Raute)</option>
+                            <option value="3-5-2">3-5-2 (Offensiv)</option>
+                            <option value="4-2-3-1">4-2-3-1 (Moderne Variante)</option>
+                            <option value="3-4-3">3-4-3 (Sturm-Formation)</option>
+                            <option value="5-3-2">5-3-2 (Defensiv / Konter)</option>
+                            <option value="4-1-4-1">4-1-4-1 (Mittelfeld-Dominanz)</option>
+                            <option value="4-3-2-1">4-3-2-1 (Tannenbaum)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">Gesamter Kader</div>
+                <div class="form-section-content">
+                    <div id="playerInputContainer"></div>
+                    <button class="add-player-btn" id="addPlayerBtn">+ Spieler zum Kader hinzufügen</button>
+                </div>
+            </div>
+
+            <button class="save-btn" id="saveSettings">Speichern & Anwenden</button>
+            <button class="reset-btn" id="resetSettingsBtn">⚠️ Einstellungen zurücksetzen</button>
+        </div>
+    </div>
+
+    <script>
+        /* Created by T.I.M. Labs */
+        
+        // --- INDEXEDDB IMPLEMENTATION FOR HIGH-CAPACITY STORAGE ---
+        const DB_NAME = 'MatchDayHubDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'app_data_store';
+        const DATA_KEY = 'hfv_presentation_app_data';
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+                request.onsuccess = (e) => resolve(e.target.result);
+                request.onerror = (e) => reject(e.target.error);
+            });
+        }
+
+        async function saveData() {
+            try {
+                const db = await openDB();
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const store = tx.objectStore(STORE_NAME);
+                store.put(appData, DATA_KEY);
+            } catch (e) {
+                console.error('Speichern in IndexedDB fehlgeschlagen:', e);
+            }
+        }
+
+        async function loadData() {
+            try {
+                const db = await openDB();
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const store = tx.objectStore(STORE_NAME);
+                const request = store.get(DATA_KEY);
+                
+                return new Promise((resolve) => {
+                    request.onsuccess = () => {
+                        if (request.result) {
+                            appData = request.result;
+                        } else {
+                            appData = JSON.parse(JSON.stringify(defaultData));
+                        }
+                        
+                        // Fallback-Konvertierung
+                        ['slide1Images', 'slide2Images'].forEach(key => {
+                            if (appData[key]) {
+                                appData[key].forEach(img => {
+                                    if (!img.width) img.width = 150;
+                                    if (!img.layer) img.layer = 'bg';
+                                });
+                            }
+                        });
+
+                        if (!appData.formationCustom) {
+                            resetCustomFormation();
+                        }
+                        resolve();
+                    };
+                    request.onerror = () => {
+                        appData = JSON.parse(JSON.stringify(defaultData));
+                        resolve();
+                    };
+                });
+            } catch (e) {
+                console.error('Laden aus IndexedDB fehlgeschlagen:', e);
+                appData = JSON.parse(JSON.stringify(defaultData));
+            }
+        }
+
+        async function deleteDBData() {
+            const db = await openDB();
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const store = tx.objectStore(STORE_NAME);
+            store.delete(DATA_KEY);
+        }
+
+        const FORMATIONS = {
+            '4-3-3': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'LV', top: 72, left: 18 },
+                { pos: 'IV', top: 76, left: 38 },
+                { pos: 'IV', top: 76, left: 62 },
+                { pos: 'RV', top: 72, left: 82 },
+                { pos: 'ZM', top: 52, left: 32 },
+                { pos: 'ZM', top: 58, left: 50 },
+                { pos: 'ZM', top: 52, left: 68 },
+                { pos: 'LF', top: 28, left: 22 },
+                { pos: 'MS', top: 22, left: 50 },
+                { pos: 'RF', top: 28, left: 78 }
+            ],
+            '4-4-2': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'LV', top: 72, left: 18 },
+                { pos: 'IV', top: 76, left: 38 },
+                { pos: 'IV', top: 76, left: 62 },
+                { pos: 'RV', top: 72, left: 82 },
+                { pos: 'LM', top: 48, left: 18 },
+                { pos: 'ZM', top: 54, left: 38 },
+                { pos: 'ZM', top: 54, left: 62 },
+                { pos: 'RM', top: 48, left: 82 },
+                { pos: 'MS', top: 24, left: 36 },
+                { pos: 'MS', top: 24, left: 64 }
+            ],
+            '3-5-2': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'IV', top: 75, left: 25 },
+                { pos: 'IV', top: 78, left: 50 },
+                { pos: 'IV', top: 75, left: 75 },
+                { pos: 'LM', top: 50, left: 15 },
+                { pos: 'ZM', top: 56, left: 38 },
+                { pos: 'ZM', top: 58, left: 50 },
+                { pos: 'ZM', top: 56, left: 62 },
+                { pos: 'RM', top: 50, left: 85 },
+                { pos: 'MS', top: 24, left: 38 },
+                { pos: 'MS', top: 24, left: 62 }
+            ],
+            '4-2-3-1': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'LV', top: 72, left: 18 },
+                { pos: 'IV', top: 76, left: 38 },
+                { pos: 'IV', top: 76, left: 62 },
+                { pos: 'RV', top: 72, left: 82 },
+                { pos: '6er', top: 58, left: 38 },
+                { pos: '6er', top: 58, left: 62 },
+                { pos: 'LM', top: 38, left: 20 },
+                { pos: 'OM', top: 36, left: 50 },
+                { pos: 'RM', top: 38, left: 80 },
+                { pos: 'MS', top: 20, left: 50 }
+            ],
+            '3-4-3': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'IV', top: 75, left: 25 },
+                { pos: 'IV', top: 78, left: 50 },
+                { pos: 'IV', top: 75, left: 75 },
+                { pos: 'LM', top: 50, left: 18 },
+                { pos: 'ZM', top: 52, left: 38 },
+                { pos: 'ZM', top: 52, left: 62 },
+                { pos: 'RM', top: 50, left: 82 },
+                { pos: 'LF', top: 25, left: 22 },
+                { pos: 'MS', top: 20, left: 50 },
+                { pos: 'RF', top: 25, left: 78 }
+            ],
+            '5-3-2': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'LAV', top: 68, left: 15 },
+                { pos: 'IV', top: 76, left: 32 },
+                { pos: 'IV', top: 78, left: 50 },
+                { pos: 'IV', top: 76, left: 68 },
+                { pos: 'RAV', top: 68, left: 85 },
+                { pos: 'ZM', top: 48, left: 30 },
+                { pos: 'ZM', top: 52, left: 50 },
+                { pos: 'ZM', top: 48, left: 70 },
+                { pos: 'MS', top: 24, left: 38 },
+                { pos: 'MS', top: 24, left: 62 }
+            ],
+            '4-1-4-1': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'LV', top: 72, left: 18 },
+                { pos: 'IV', top: 76, left: 38 },
+                { pos: 'IV', top: 76, left: 62 },
+                { pos: 'RV', top: 72, left: 82 },
+                { pos: '6er', top: 60, left: 50 },
+                { pos: 'LM', top: 40, left: 18 },
+                { pos: 'ZM', top: 42, left: 38 },
+                { pos: 'ZM', top: 42, left: 62 },
+                { pos: 'RM', top: 40, left: 82 },
+                { pos: 'MS', top: 20, left: 50 }
+            ],
+            '4-3-2-1': [
+                { pos: 'TW', top: 88, left: 50 },
+                { pos: 'LV', top: 72, left: 18 },
+                { pos: 'IV', top: 76, left: 38 },
+                { pos: 'IV', top: 76, left: 62 },
+                { pos: 'RV', top: 72, left: 82 },
+                { pos: 'ZM', top: 56, left: 28 },
+                { pos: 'ZM', top: 58, left: 50 },
+                { pos: 'ZM', top: 56, left: 72 },
+                { pos: 'OM', top: 36, left: 38 },
+                { pos: 'OM', top: 36, left: 62 },
+                { pos: 'MS', top: 20, left: 50 }
+            ]
+        };
+
+        const defaultData = {
+            homeName: 'Hiddinghauser F.V. 1966 e.V.',
+            welcomeText: 'Herzlich willkommen zum heutigen Heimspiel!',
+            welcomeBadge: 'Kreisliga • Spieltag',
+            awayName: 'Gastverein',
+            matchInfo: 'Sportplatz Hiddinghausen • 15:00 Uhr',
+            homeLogo: 'Wappen.jpg',
+            awayLogo: 'https://via.placeholder.com/120/E2E8F0/1A202C?text=GEGNER',
+            formation: '4-3-3',
+            formationCustom: null,
+            slide1Images: [
+                { src: '', x: 20, y: 50, width: 150, layer: 'bg' },
+                { src: '', x: 50, y: 50, width: 150, layer: 'bg' },
+                { src: '', x: 80, y: 50, width: 150, layer: 'bg' }
+            ],
+            slide2Images: [
+                { src: '', x: 20, y: 50, width: 150, layer: 'bg' },
+                { src: '', x: 50, y: 50, width: 150, layer: 'bg' },
+                { src: '', x: 80, y: 50, width: 150, layer: 'bg' }
+            ],
+            style: {
+                headerBg: '#FFFFFF',
+                headerFontSize: 22,
+                headerFontWeight: '800',
+                headerFontColor: '#2B5282',
+                
+                headerSubtitleFontSize: 14,
+                headerSubtitleFontWeight: '600',
+                headerSubtitleFontColor: '#1A202C',
+
+                cardFontSize: 24,
+                cardFontWeight: '800',
+                cardFontColor: '#2B5282',
+
+                welcomeTextFontSize: 18,
+                welcomeTextFontWeight: '600',
+                welcomeTextFontColor: '#1A202C',
+
+                badgeFontSize: 15,
+                badgeFontWeight: '700',
+                badgeFontColor: '#2B5282',
+
+                pitchFontSize: 12,
+                pitchFontWeight: '700',
+                pitchFontColor: '#FFFFFF'
+            },
+            players: [
+                { id: 'p1', name: 'M. Fischer', img: '' },
+                { id: 'p2', name: 'K. Schmidt', img: '' },
+                { id: 'p3', name: 'L. Weber', img: '' },
+                { id: 'p4', name: 'J. Becker', img: '' },
+                { id: 'p5', name: 'T. Wagner', img: '' },
+                { id: 'p6', name: 'S. Hoffmann', img: '' },
+                { id: 'p7', name: 'D. Schulz', img: '' },
+                { id: 'p8', name: 'M. Koch', img: '' },
+                { id: 'p9', name: 'P. Richter', img: '' },
+                { id: 'p10', name: 'A. Klein', img: '' },
+                { id: 'p11', name: 'C. Wolf', img: '' },
+                { id: 'p12', name: 'B. Neumann', img: '' },
+                { id: 'p13', name: 'F. Lange', img: '' },
+                { id: 'p14', name: 'H. Meyer', img: '' },
+                { id: 'p15', name: 'O. Peters', img: '' }
+            ],
+            positionAssignments: [
+                ['p1', 'p12'], ['p2', 'p13'], ['p3', null], ['p4', null],
+                ['p5', null], ['p6', null], ['p7', null], ['p8', null],
+                ['p9', null], ['p10', null], ['p11', null]
+            ]
+        };
+
+        let appData = {};
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+
+        async function init() {
+            await loadData();
+            renderPlayerInputs();
+            renderImageInputs();
+            updateUI();
+            setupEventListeners();
+            setupAccordion();
+            setupDragAndDrop();
+            setupOverlayInteractions();
+        }
+
+        function setupAccordion() {
+            document.querySelectorAll('.form-section-title').forEach(title => {
+                title.addEventListener('click', () => {
+                    const section = title.parentElement;
+                    section.classList.toggle('open');
+                });
+            });
+        }
+
+        function resetCustomFormation() {
+            const baseForm = FORMATIONS[appData.formation] || FORMATIONS['4-3-3'];
+            appData.formationCustom = JSON.parse(JSON.stringify(baseForm));
+        }
+
+        function renderImageInputs() {
+            const s1Container = document.getElementById('slide1ImagesContainer');
+            const s2Container = document.getElementById('slide2ImagesContainer');
+
+            s1Container.innerHTML = '';
+            s2Container.innerHTML = '';
+
+            appData.slide1Images.forEach((imgData, i) => {
+                const block = document.createElement('div');
+                block.className = 'setting-block';
+                block.innerHTML = `
+                    <div class="form-group">
+                        <label>Bild ${i+1} Datei</label>
+                        <input type="file" accept="image/*" class="s1-img-file" data-idx="${i}">
+                    </div>
+                    <div class="form-group" style="margin-top:5px;">
+                        <label>Ebene / Sichtbarkeit</label>
+                        <select class="s1-img-layer" data-idx="${i}">
+                            <option value="bg" ${imgData.layer === 'bg' ? 'selected' : ''}>Hintergrund (hinter Kacheln)</option>
+                            <option value="fg" ${imgData.layer === 'fg' ? 'selected' : ''}>Vordergrund (vor Kacheln)</option>
+                        </select>
+                    </div>
+                `;
+                s1Container.appendChild(block);
+            });
+
+            appData.slide2Images.forEach((imgData, i) => {
+                const block = document.createElement('div');
+                block.className = 'setting-block';
+                block.innerHTML = `
+                    <div class="form-group">
+                        <label>Bild ${i+1} Datei</label>
+                        <input type="file" accept="image/*" class="s2-img-file" data-idx="${i}">
+                    </div>
+                    <div class="form-group" style="margin-top:5px;">
+                        <label>Ebene / Sichtbarkeit</label>
+                        <select class="s2-img-layer" data-idx="${i}">
+                            <option value="bg" ${imgData.layer === 'bg' ? 'selected' : ''}>Hintergrund (hinter Kacheln)</option>
+                            <option value="fg" ${imgData.layer === 'fg' ? 'selected' : ''}>Vordergrund (vor Kacheln)</option>
+                        </select>
+                    </div>
+                `;
+                s2Container.appendChild(block);
+            });
+        }
+
+        function renderPlayerInputs() {
+            const container = document.getElementById('playerInputContainer');
+            container.innerHTML = '';
+
+            appData.players.forEach((p, idx) => {
+                const row = document.createElement('div');
+                row.className = 'player-input-row';
+                row.innerHTML = `
+                    <span style="font-size:12px; font-weight:bold; color:var(--hfv-blue);">#${idx+1}</span>
+                    <input type="text" value="${p.name}" placeholder="Name" data-idx="${idx}" class="p-name-input">
+                    <input type="file" accept="image/*" data-idx="${idx}" class="p-img-input">
+                    <button class="delete-player-btn" data-idx="${idx}" title="Löschen">🗑️</button>
+                `;
+                container.appendChild(row);
+            });
+
+            setupDeleteButtons();
+        }
+
+        function setupDeleteButtons() {
+            document.querySelectorAll('.delete-player-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-idx'));
+                    const removedPlayer = appData.players[idx];
+                    
+                    appData.players.splice(idx, 1);
+                    
+                    appData.positionAssignments.forEach(pair => {
+                        if (pair[0] === removedPlayer.id) pair[0] = null;
+                        if (pair[1] === removedPlayer.id) pair[1] = null;
+                    });
+
+                    await saveData();
+                    renderPlayerInputs();
+                });
+            });
+        }
+
+        function updateUI() {
+            const header = document.getElementById('mainHeader');
+            header.style.backgroundColor = appData.style.headerBg;
+
+            const headerTitle = document.getElementById('headerClubName');
+            headerTitle.style.fontSize = appData.style.headerFontSize + 'px';
+            headerTitle.style.fontWeight = appData.style.headerFontWeight;
+            headerTitle.style.color = appData.style.headerFontColor;
+
+            const headerSubtitle = document.getElementById('headerMatchInfo');
+            headerSubtitle.style.fontSize = appData.style.headerSubtitleFontSize + 'px';
+            headerSubtitle.style.fontWeight = appData.style.headerSubtitleFontWeight;
+            headerSubtitle.style.color = appData.style.headerSubtitleFontColor;
+
+            const welcomeClub = document.getElementById('welcomeClub');
+            welcomeClub.style.fontSize = (parseInt(appData.style.cardFontSize) + 8) + 'px';
+            welcomeClub.style.fontWeight = appData.style.cardFontWeight;
+            welcomeClub.style.color = appData.style.cardFontColor;
+
+            document.querySelectorAll('.team-name').forEach(el => {
+                el.style.fontSize = appData.style.cardFontSize + 'px';
+                el.style.fontWeight = appData.style.cardFontWeight;
+                el.style.color = appData.style.cardFontColor;
+            });
+
+            const welcomeText = document.getElementById('welcomeText');
+            welcomeText.style.fontSize = appData.style.welcomeTextFontSize + 'px';
+            welcomeText.style.fontWeight = appData.style.welcomeTextFontWeight;
+            welcomeText.style.color = appData.style.welcomeTextFontColor;
+
+            const welcomeBadge = document.getElementById('welcomeMatchDate');
+            welcomeBadge.style.fontSize = appData.style.badgeFontSize + 'px';
+            welcomeBadge.style.fontWeight = appData.style.badgeFontWeight;
+            welcomeBadge.style.color = appData.style.badgeFontColor;
+
+            const matchDetails = document.getElementById('matchLocation');
+            matchDetails.style.fontSize = appData.style.badgeFontSize + 'px';
+            matchDetails.style.fontWeight = appData.style.badgeFontWeight;
+            matchDetails.style.color = appData.style.badgeFontColor;
+
+            headerTitle.innerText = appData.homeName;
+            welcomeClub.innerText = appData.homeName;
+            document.getElementById('homeName').innerText = appData.homeName;
+
+            document.getElementById('welcomeText').innerText = appData.welcomeText;
+            document.getElementById('welcomeMatchDate').innerText = appData.welcomeBadge;
+
+            document.getElementById('awayName').innerText = appData.awayName;
+            document.getElementById('matchLocation').innerText = appData.matchInfo;
+            document.getElementById('headerMatchInfo').innerText = appData.matchInfo;
+
+            if(appData.homeLogo) {
+                document.getElementById('headerLogo').src = appData.homeLogo;
+                document.getElementById('welcomeLogo').src = appData.homeLogo;
+                document.getElementById('homeLogo').src = appData.homeLogo;
+            }
+
+            if(appData.awayLogo) {
+                document.getElementById('awayLogo').src = appData.awayLogo;
+            }
+
+            renderOverlays();
+            renderPitches();
+        }
+
+        function renderOverlays() {
+            const container1 = document.getElementById('slide1Overlays');
+            const container2 = document.getElementById('slide2Overlays');
+            container1.innerHTML = '';
+            container2.innerHTML = '';
+
+            appData.slide1Images.forEach((imgData, i) => {
+                if (imgData.src) {
+                    const wrap = document.createElement('div');
+                    wrap.className = `overlay-wrapper layer-${imgData.layer || 'bg'}`;
+                    wrap.dataset.slide = '1';
+                    wrap.dataset.idx = i;
+                    wrap.style.left = imgData.x + '%';
+                    wrap.style.top = imgData.y + '%';
+                    wrap.style.width = (imgData.width || 150) + 'px';
+
+                    wrap.innerHTML = `
+                        <img src="${imgData.src}">
+                        <div class="resize-handle"></div>
+                        <button class="layer-toggle-btn">${imgData.layer === 'fg' ? 'Ebene: Vorne' : 'Ebene: Hinten'}</button>
+                    `;
+                    container1.appendChild(wrap);
+                }
+            });
+
+            appData.slide2Images.forEach((imgData, i) => {
+                if (imgData.src) {
+                    const wrap = document.createElement('div');
+                    wrap.className = `overlay-wrapper layer-${imgData.layer || 'bg'}`;
+                    wrap.dataset.slide = '2';
+                    wrap.dataset.idx = i;
+                    wrap.style.left = imgData.x + '%';
+                    wrap.style.top = imgData.y + '%';
+                    wrap.style.width = (imgData.width || 150) + 'px';
+
+                    wrap.innerHTML = `
+                        <img src="${imgData.src}">
+                        <div class="resize-handle"></div>
+                        <button class="layer-toggle-btn">${imgData.layer === 'fg' ? 'Ebene: Vorne' : 'Ebene: Hinten'}</button>
+                    `;
+                    container2.appendChild(wrap);
+                }
+            });
+        }
+
+        function setupOverlayInteractions() {
+            let activeDrag = null;
+            let activeResize = null;
+            let startX, startY, startWidth, initialX, initialY;
+
+            document.addEventListener('click', async (e) => {
+                const clickedWrapper = e.target.closest('.overlay-wrapper');
+                
+                if (clickedWrapper) {
+                    e.stopPropagation();
+                    document.querySelectorAll('.overlay-wrapper').forEach(w => w.classList.remove('active'));
+                    clickedWrapper.classList.add('active');
+                } else {
+                    document.querySelectorAll('.overlay-wrapper').forEach(w => w.classList.remove('active'));
+                }
+
+                if (e.target.classList.contains('layer-toggle-btn')) {
+                    const wrap = e.target.closest('.overlay-wrapper');
+                    const slide = wrap.dataset.slide;
+                    const idx = parseInt(wrap.dataset.idx);
+                    const list = slide === '1' ? appData.slide1Images : appData.slide2Images;
+
+                    list[idx].layer = list[idx].layer === 'fg' ? 'bg' : 'fg';
+                    await saveData();
+                    renderOverlays();
+                    renderImageInputs();
+                }
+            });
+
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.classList.contains('resize-handle')) {
+                    activeResize = e.target.closest('.overlay-wrapper');
+                    startX = e.clientX;
+                    startWidth = activeResize.offsetWidth;
+                    e.stopPropagation();
+                    return;
+                }
+
+                const wrap = e.target.closest('.overlay-wrapper');
+                if (wrap && !e.target.classList.contains('layer-toggle-btn')) {
+                    activeDrag = wrap;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    const rect = wrap.getBoundingClientRect();
+                    const parentRect = wrap.parentElement.getBoundingClientRect();
+
+                    initialX = ((rect.left + rect.width / 2 - parentRect.left) / parentRect.width) * 100;
+                    initialY = ((rect.top + rect.height / 2 - parentRect.top) / parentRect.height) * 100;
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (activeResize) {
+                    const diffX = e.clientX - startX;
+                    const newWidth = Math.max(40, startWidth + diffX);
+                    activeResize.style.width = newWidth + 'px';
+
+                    const slide = activeResize.dataset.slide;
+                    const idx = parseInt(activeResize.dataset.idx);
+                    const list = slide === '1' ? appData.slide1Images : appData.slide2Images;
+                    list[idx].width = newWidth;
+                } else if (activeDrag) {
+                    const parentRect = activeDrag.parentElement.getBoundingClientRect();
+                    const diffX = ((e.clientX - startX) / parentRect.width) * 100;
+                    const diffY = ((e.clientY - startY) / parentRect.height) * 100;
+
+                    let newX = Math.max(0, Math.min(100, initialX + diffX));
+                    let newY = Math.max(0, Math.min(100, initialY + diffY));
+
+                    activeDrag.style.left = newX + '%';
+                    activeDrag.style.top = newY + '%';
+
+                    const slide = activeDrag.dataset.slide;
+                    const idx = parseInt(activeDrag.dataset.idx);
+                    const list = slide === '1' ? appData.slide1Images : appData.slide2Images;
+                    list[idx].x = newX;
+                    list[idx].y = newY;
+                }
+            });
+
+            window.addEventListener('mouseup', async () => {
+                if (activeDrag || activeResize) {
+                    activeDrag = null;
+                    activeResize = null;
+                    await saveData();
+                }
+            });
+        }
+
+        function createPlayerOptions(selectedId) {
+            let html = '<option value="">-- Leer --</option>';
+            appData.players.forEach(p => {
+                const isSelected = (p.id === selectedId) ? 'selected' : '';
+                html += `<option value="${p.id}" ${isSelected}>${p.name}</option>`;
+            });
+            return html;
+        }
+
+        function renderPitches() {
+            const pitchTaktik = document.getElementById('pitchTaktik');
+            const pitchAufstellung = document.getElementById('pitchAufstellung');
+
+            document.querySelectorAll('.player-node').forEach(el => el.remove());
+
+            const formPos = appData.formationCustom;
+
+            formPos.forEach((pos, posIdx) => {
+                const node3 = document.createElement('div');
+                node3.className = 'player-node draggable-node';
+                node3.dataset.posIdx = posIdx;
+                node3.style.top = pos.top + '%';
+                node3.style.left = pos.left + '%';
+                node3.innerHTML = `
+                    <div class="ball-marker">⚽</div>
+                    <div class="player-label" style="font-size:${appData.style.pitchFontSize}px; font-weight:${appData.style.pitchFontWeight}; color:${appData.style.pitchFontColor};">${pos.pos}</div>
+                `;
+                pitchTaktik.appendChild(node3);
+
+                const node4 = document.createElement('div');
+                node4.className = 'player-node draggable-node';
+                node4.dataset.posIdx = posIdx;
+                node4.style.top = pos.top + '%';
+                node4.style.left = pos.left + '%';
+                
+                const assignment = appData.positionAssignments[posIdx] || [null, null];
+                const player1 = appData.players.find(p => p.id === assignment[0]) || { name: 'Spieler 1', img: '' };
+                const player2 = appData.players.find(p => p.id === assignment[1]) || { name: 'Spieler 2', img: '' };
+
+                const imgSrc1 = player1.img || 'https://via.placeholder.com/64/2B5282/FFFFFF?text=' + pos.pos + '1';
+                const imgSrc2 = player2.img || 'https://via.placeholder.com/64/2B5282/FFFFFF?text=' + pos.pos + '2';
+
+                node4.innerHTML = `
+                    <div class="double-player-node">
+                        <div class="single-player-col">
+                            <img src="${imgSrc1}" class="player-avatar" alt="${player1.name}">
+                            <select class="player-select field-select" data-pos-idx="${posIdx}" data-slot="0" style="font-size:${appData.style.pitchFontSize}px; font-weight:${appData.style.pitchFontWeight}; color:${appData.style.pitchFontColor};">
+                                ${createPlayerOptions(player1.id)}
+                            </select>
+                        </div>
+                        <div class="single-player-col">
+                            <img src="${imgSrc2}" class="player-avatar" alt="${player2.name}">
+                            <select class="player-select field-select" data-pos-idx="${posIdx}" data-slot="1" style="font-size:${appData.style.pitchFontSize}px; font-weight:${appData.style.pitchFontWeight}; color:${appData.style.pitchFontColor};">
+                                ${createPlayerOptions(player2.id)}
+                            </select>
+                        </div>
+                    </div>
+                `;
+                pitchAufstellung.appendChild(node4);
+            });
+
+            document.querySelectorAll('.field-select').forEach(select => {
+                select.addEventListener('change', async (e) => {
+                    const posIndex = parseInt(e.target.getAttribute('data-pos-idx'));
+                    const slotIndex = parseInt(e.target.getAttribute('data-slot'));
+                    const selectedPlayerId = e.target.value;
+
+                    if (!appData.positionAssignments[posIndex]) {
+                        appData.positionAssignments[posIndex] = [null, null];
+                    }
+                    appData.positionAssignments[posIndex][slotIndex] = selectedPlayerId || null;
+                    await saveData();
+                    renderPitches();
+                });
+            });
+        }
+
+        function setupDragAndDrop() {
+            let activeNode = null;
+            let currentPitch = null;
+            let currentPosIdx = null;
+
+            document.addEventListener('mousedown', (e) => {
+                const node = e.target.closest('.draggable-node');
+                if (node && e.target.tagName !== 'SELECT') {
+                    activeNode = node;
+                    currentPitch = node.parentElement;
+                    currentPosIdx = parseInt(node.dataset.posIdx);
+                }
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!activeNode || !currentPitch) return;
+
+                const rect = currentPitch.getBoundingClientRect();
+                
+                let x = ((e.clientX - rect.left) / rect.width) * 100;
+                let y = ((e.clientY - rect.top) / rect.height) * 100;
+
+                x = Math.max(1, Math.min(99, x));
+                y = Math.max(1, Math.min(99, y));
+
+                activeNode.style.left = x + '%';
+                activeNode.style.top = y + '%';
+
+                if (currentPosIdx !== null && appData.formationCustom[currentPosIdx]) {
+                    appData.formationCustom[currentPosIdx].left = x;
+                    appData.formationCustom[currentPosIdx].top = y;
+                }
+            });
+
+            window.addEventListener('mouseup', async () => {
+                if (activeNode) {
+                    activeNode = null;
+                    currentPitch = null;
+                    currentPosIdx = null;
+                    await saveData();
+                    renderPitches();
+                }
+            });
+        }
+
+        function goToSlide(index) {
+            slides[currentSlide].classList.remove('active');
+            dots[currentSlide].classList.remove('active');
+
+            currentSlide = index;
+
+            slides[currentSlide].classList.add('active');
+            dots[currentSlide].classList.add('active');
+
+            document.getElementById('prevBtn').disabled = (currentSlide === 0);
+            document.getElementById('nextBtn').disabled = (currentSlide === slides.length - 1);
+        }
+
+        function setupEventListeners() {
+            // VOLLBILD LOGIK
+            const fullscreenBtn = document.getElementById('fullscreenToggle');
+            const fullscreenIcon = document.getElementById('fullscreenIcon');
+
+            const iconEnter = '<path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>';
+            const iconExit = '<path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>';
+
+            fullscreenBtn.addEventListener('click', () => {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen().catch(err => {
+                        console.error(`Fehler beim Aktivieren des Vollbildmodus: ${err.message}`);
+                    });
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    }
+                }
+            });
+
+            document.addEventListener('fullscreenchange', () => {
+                if (document.fullscreenElement) {
+                    fullscreenIcon.innerHTML = iconExit;
+                } else {
+                    fullscreenIcon.innerHTML = iconEnter;
+                }
+            });
+
+            // NAVIGATION LOGIK
+            document.getElementById('prevBtn').addEventListener('click', () => {
+                if (currentSlide > 0) goToSlide(currentSlide - 1);
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', () => {
+                if (currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
+            });
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    goToSlide(parseInt(e.target.dataset.slide));
+                });
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && currentSlide < slides.length - 1) goToSlide(currentSlide + 1);
+                if (e.key === 'ArrowLeft' && currentSlide > 0) goToSlide(currentSlide - 1);
+            });
+
+            const modal = document.getElementById('settingsModal');
+            document.getElementById('openSettings').addEventListener('click', () => {
+                document.getElementById('inputHeaderBg').value = appData.style.headerBg;
+                document.getElementById('inputHeaderFontSize').value = appData.style.headerFontSize;
+                document.getElementById('inputHeaderFontWeight').value = appData.style.headerFontWeight;
+                document.getElementById('inputHeaderFontColor').value = appData.style.headerFontColor;
+
+                document.getElementById('inputHeaderSubtitleFontSize').value = appData.style.headerSubtitleFontSize;
+                document.getElementById('inputHeaderSubtitleFontWeight').value = appData.style.headerSubtitleFontWeight;
+                document.getElementById('inputHeaderSubtitleFontColor').value = appData.style.headerSubtitleFontColor;
+
+                document.getElementById('inputCardFontSize').value = appData.style.cardFontSize;
+                document.getElementById('inputCardFontWeight').value = appData.style.cardFontWeight;
+                document.getElementById('inputCardFontColor').value = appData.style.cardFontColor;
+
+                document.getElementById('inputWelcomeTextFontSize').value = appData.style.welcomeTextFontSize;
+                document.getElementById('inputWelcomeTextFontWeight').value = appData.style.welcomeTextFontWeight;
+                document.getElementById('inputWelcomeTextFontColor').value = appData.style.welcomeTextFontColor;
+
+                document.getElementById('inputBadgeFontSize').value = appData.style.badgeFontSize;
+                document.getElementById('inputBadgeFontWeight').value = appData.style.badgeFontWeight;
+                document.getElementById('inputBadgeFontColor').value = appData.style.badgeFontColor;
+
+                document.getElementById('inputPitchFontSize').value = appData.style.pitchFontSize;
+                document.getElementById('inputPitchFontWeight').value = appData.style.pitchFontWeight;
+                document.getElementById('inputPitchFontColor').value = appData.style.pitchFontColor;
+
+                document.getElementById('inputHomeName').value = appData.homeName;
+                document.getElementById('inputWelcomeText').value = appData.welcomeText;
+                document.getElementById('inputWelcomeBadge').value = appData.welcomeBadge;
+                document.getElementById('inputAwayName').value = appData.awayName;
+                document.getElementById('inputMatchInfo').value = appData.matchInfo;
+                document.getElementById('inputFormation').value = appData.formation;
+
+                renderImageInputs();
+                renderPlayerInputs();
+                modal.classList.add('open');
+            });
+
+            document.getElementById('closeSettings').addEventListener('click', () => modal.classList.remove('open'));
+
+            document.getElementById('resetSettingsBtn').addEventListener('click', async () => {
+                if (confirm('Möchtest du wirklich alle gespeicherten Daten und Einstellungen auf den Standard zurücksetzen?')) {
+                    await deleteDBData();
+                    appData = JSON.parse(JSON.stringify(defaultData));
+                    resetCustomFormation();
+                    await saveData();
+                    updateUI();
+                    modal.classList.remove('open');
+                }
+            });
+
+            document.getElementById('addPlayerBtn').addEventListener('click', async () => {
+                const newId = 'p_' + Date.now();
+                appData.players.push({ id: newId, name: `Neuer Spieler`, img: '' });
+                await saveData();
+                renderPlayerInputs();
+            });
+
+            document.getElementById('saveSettings').addEventListener('click', () => {
+                appData.style.headerBg = document.getElementById('inputHeaderBg').value;
+                appData.style.headerFontSize = document.getElementById('inputHeaderFontSize').value;
+                appData.style.headerFontWeight = document.getElementById('inputHeaderFontWeight').value;
+                appData.style.headerFontColor = document.getElementById('inputHeaderFontColor').value;
+
+                appData.style.headerSubtitleFontSize = document.getElementById('inputHeaderSubtitleFontSize').value;
+                appData.style.headerSubtitleFontWeight = document.getElementById('inputHeaderSubtitleFontWeight').value;
+                appData.style.headerSubtitleFontColor = document.getElementById('inputHeaderSubtitleFontColor').value;
+
+                appData.style.cardFontSize = document.getElementById('inputCardFontSize').value;
+                appData.style.cardFontWeight = document.getElementById('inputCardFontWeight').value;
+                appData.style.cardFontColor = document.getElementById('inputCardFontColor').value;
+
+                appData.style.welcomeTextFontSize = document.getElementById('inputWelcomeTextFontSize').value;
+                appData.style.welcomeTextFontWeight = document.getElementById('inputWelcomeTextFontWeight').value;
+                appData.style.welcomeTextFontColor = document.getElementById('inputWelcomeTextFontColor').value;
+
+                appData.style.badgeFontSize = document.getElementById('inputBadgeFontSize').value;
+                appData.style.badgeFontWeight = document.getElementById('inputBadgeFontWeight').value;
+                appData.style.badgeFontColor = document.getElementById('inputBadgeFontColor').value;
+
+                appData.style.pitchFontSize = document.getElementById('inputPitchFontSize').value;
+                appData.style.pitchFontWeight = document.getElementById('inputPitchFontWeight').value;
+                appData.style.pitchFontColor = document.getElementById('inputPitchFontColor').value;
+
+                appData.homeName = document.getElementById('inputHomeName').value;
+                appData.welcomeText = document.getElementById('inputWelcomeText').value;
+                appData.welcomeBadge = document.getElementById('inputWelcomeBadge').value;
+                appData.awayName = document.getElementById('inputAwayName').value;
+                appData.matchInfo = document.getElementById('inputMatchInfo').value;
+                
+                const newFormation = document.getElementById('inputFormation').value;
+                if (newFormation !== appData.formation) {
+                    appData.formation = newFormation;
+                    resetCustomFormation();
+                }
+
+                document.querySelectorAll('.s1-img-layer').forEach(sel => appData.slide1Images[parseInt(sel.dataset.idx)].layer = sel.value);
+                document.querySelectorAll('.s2-img-layer').forEach(sel => appData.slide2Images[parseInt(sel.dataset.idx)].layer = sel.value);
+
+                const nameInputs = document.querySelectorAll('.p-name-input');
+                nameInputs.forEach((inp, idx) => {
+                    if(appData.players[idx]) {
+                        appData.players[idx].name = inp.value || `Spieler ${idx+1}`;
+                    }
+                });
+
+                let filesToProcess = 0;
+                let filesProcessed = 0;
+
+                const checkFinished = async () => {
+                    filesProcessed++;
+                    if (filesProcessed >= filesToProcess) {
+                        await saveData();
+                        updateUI();
+                        modal.classList.remove('open');
+                    }
+                };
+
+                const homeLogoFile = document.getElementById('inputHomeLogoFile').files[0];
+                const awayLogoFile = document.getElementById('inputAwayLogoFile').files[0];
+                const imgInputs = document.querySelectorAll('.p-img-input');
+                const s1ImgFiles = document.querySelectorAll('.s1-img-file');
+                const s2ImgFiles = document.querySelectorAll('.s2-img-file');
+
+                if (homeLogoFile) filesToProcess++;
+                if (awayLogoFile) filesToProcess++;
+                imgInputs.forEach(inp => { if (inp.files[0]) filesToProcess++; });
+                s1ImgFiles.forEach(inp => { if (inp.files[0]) filesToProcess++; });
+                s2ImgFiles.forEach(inp => { if (inp.files[0]) filesToProcess++; });
+
+                if (filesToProcess === 0) {
+                    saveData().then(() => {
+                        updateUI();
+                        modal.classList.remove('open');
+                    });
+                    return;
+                }
+
+                if (homeLogoFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) { appData.homeLogo = e.target.result; checkFinished(); };
+                    reader.readAsDataURL(homeLogoFile);
+                }
+
+                if (awayLogoFile) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) { appData.awayLogo = e.target.result; checkFinished(); };
+                    reader.readAsDataURL(awayLogoFile);
+                }
+
+                imgInputs.forEach((inp, idx) => {
+                    if (inp.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) { 
+                            if(appData.players[idx]) appData.players[idx].img = e.target.result; 
+                            checkFinished(); 
+                        };
+                        reader.readAsDataURL(inp.files[0]);
+                    }
+                });
+
+                s1ImgFiles.forEach((inp) => {
+                    if (inp.files[0]) {
+                        const idx = parseInt(inp.dataset.idx);
+                        const reader = new FileReader();
+                        reader.onload = function(e) { 
+                            appData.slide1Images[idx].src = e.target.result; 
+                            checkFinished(); 
+                        };
+                        reader.readAsDataURL(inp.files[0]);
+                    }
+                });
+
+                s2ImgFiles.forEach((inp) => {
+                    if (inp.files[0]) {
+                        const idx = parseInt(inp.dataset.idx);
+                        const reader = new FileReader();
+                        reader.onload = function(e) { 
+                            appData.slide2Images[idx].src = e.target.result; 
+                            checkFinished(); 
+                        };
+                        reader.readAsDataURL(inp.files[0]);
+                    }
+                });
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>
